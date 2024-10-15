@@ -1,0 +1,58 @@
+// See https://aka.ms/vscode-remote/devcontainer.json for format details.
+{
+	"name": "${localWorkspaceFolderBasename}",
+	"dockerFile": "Dockerfile",
+	"build": {
+		"args": {
+			"BASE_IMAGE": "pytorch/pytorch:2.4.1-cuda12.4-cudnn9-runtime"
+		},
+	},
+	
+	"privileged": true,
+	"runArgs": [
+		"--network=host",
+		"--privileged",
+		"--cap-add=SYS_PTRACE",
+		"--security-opt=seccomp:unconfined",
+		"--security-opt=apparmor:unconfined",
+		"-e",
+		"DISPLAY=${env:DISPLAY}",
+		"--ipc=host",
+		"--pid=host",
+		"--ulimit=memlock=-1",
+		"--ulimit=stack=6710886",
+		"--gpus=all",
+		"--runtime=nvidia"
+
+	],
+	"containerEnv": {
+		"DISPLAY": "${localEnv:DISPLAY}", // for GUI applications
+		"SSH_AUTH_SOCK": "/ssh-agent"
+	},
+	"mounts": [
+		"source=${localEnv:SSH_AUTH_SOCK},target=/ssh-agent,type=bind,consistency=cached",
+		"source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached",
+		"source=/home/${localEnv:USER}/.ssh,target=/home/${localEnv:USER}/.ssh,type=bind,consistency=cached",
+		"source=/home/${localEnv:USER}/DATA/TinyShakespeare,target=/DATA/TinyShakespeare,type=bind,consistency=cached",
+	],
+	"postCreateCommand": "sysctl -w net.core.rmem_max=2147483647",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"dotjoshjohnson.xml",
+				"zachflower.uncrustify",
+				"ms-python.python",
+				"ms-vscode.cpptools",
+				"redhat.vscode-yaml",
+				"ms-iot.vscode-ros",
+				"smilerobotics.urdf",
+				"streetsidesoftware.code-spell-checker",
+				"twxs.cmake",
+				"yzhang.markdown-all-in-one",
+				"mhutchie.git-graph",
+				"GitHub.copilot",
+				"ms-toolsai.jupyter"
+			]
+		}
+	}
+}
